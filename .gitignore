@@ -400,3 +400,6 @@ dist/
 
 # Git submodules
 .gitmodules
+
+# Obsidian
+.obsidian
