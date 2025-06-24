@@ -1,111 +1,106 @@
-# CritterPP Migration Plan
+# CritterPP Code Transformation Plan
 
 ## Executive Summary
 
-This document outlines the comprehensive migration plan for transforming PlatformPlatform from a CRUD-based architecture to an event-driven system using the Critter Stack (Marten + Wolverine). The migration is structured in 4 phases over 6-8 months with minimal disruption to existing operations.
+This document outlines the comprehensive plan for transforming PlatformPlatform from a traditional layered architecture to a modern Vertical Slice Architecture using the Critter Stack (Marten + Wolverine). This is a **pure code transformation** project - no live system migration or operational concerns.
 
-## Migration Overview
+## Code Transformation Overview
 
-### Approach: Strangler Fig Pattern
-- **Parallel Development**: Build new event-driven features alongside existing CRUD system
-- **Gradual Migration**: Migrate features incrementally with full rollback capability
-- **Zero Downtime**: Maintain service availability throughout the migration
-- **API Compatibility**: Preserve existing API contracts for seamless frontend integration
+### Approach: Clean Slate Reimplementation
+- **New Codebase**: Complete reimplementation using VSA and Critter Stack patterns
+- **Feature-by-Feature**: Transform each business capability as a vertical slice
+- **Pattern Establishment**: Create reusable patterns for consistent implementation
+- **Specification-Driven**: Use Given-When-Then specs to drive implementation
 
 ### Success Metrics
-- **Zero Service Downtime**: 99.99% uptime maintained
-- **Data Integrity**: 100% data consistency validation
-- **Performance Parity**: Response times within 10% of current system
-- **Feature Parity**: All existing functionality preserved
-- **Team Velocity**: Development speed improvement within 3 months post-migration
+- **Architecture Compliance**: 100% adherence to VSA and AggregateHandler patterns
+- **Code Quality**: Elimination of 70%+ boilerplate through Wolverine generation
+- **Test Performance**: Fast unit tests for all business logic (<100ms)
+- **Pattern Consistency**: All slices follow identical structural patterns
+- **Developer Productivity**: Clear patterns enable rapid feature development
 
-## Phase 1: Foundation & Infrastructure (Weeks 1-6)
+## Phase 1: Foundation & Project Setup (Weeks 1-4)
 
 ### Objectives
-- Establish event sourcing infrastructure
-- Set up PostgreSQL and Marten configuration
-- Create base classes and shared kernel for event sourcing
-- Implement monitoring and testing frameworks
+- Set up new VSA project structure
+- Establish Critter Stack infrastructure (Marten + Wolverine)
+- Create SharedKernel with base types and utilities
+- Implement testing framework and development environment
 
-### Week 1-2: Infrastructure Setup
+### Week 1-2: Project Structure & Base Infrastructure
 ```yaml
-Tasks:
-  - PostgreSQL Setup:
-    - Deploy PostgreSQL cluster in Azure
-    - Configure connection strings and security
-    - Set up backup and recovery procedures
-  - Marten Configuration:
-    - Install Marten packages
-    - Configure event store schema
-    - Set up basic projections infrastructure
-  - Wolverine Integration:
-    - Install Wolverine packages
-    - Configure message handlers
-    - Set up DI container integration
+Project Setup:
+  - Create new solution with VSA folder structure
+  - Set up Features/, SharedKernel/, Infrastructure/ folders
+  - Configure package references (Marten, Wolverine, ASP.NET Core)
+  - Set up PostgreSQL for local development
+  - Create Docker Compose for development environment
+
+Base Types Implementation:
+  - ICommand, IQuery, IEvent base interfaces
+  - Strongly-typed ID base classes (UserId, TenantId)
+  - Result<T> types for error handling
+  - Base event and state record types
 ```
 
-### Week 3-4: Shared Kernel Development
+### Week 3-4: Wolverine & Marten Integration
 ```csharp
-// New Event Sourcing Base Classes
-public abstract record DomainEvent
+// Infrastructure/Wolverine/WolverineConfiguration.cs
+public static class WolverineConfiguration
 {
-    public Guid EventId { get; init; } = Guid.NewGuid();
-    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
-    public string EventType { get; init; } = GetType().Name;
-    public int Version { get; init; } = 1;
+    public static IHostBuilder UseWolverineWithMarten(this IHostBuilder builder)
+    {
+        return builder.UseWolverine(opts =>
+        {
+            opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Static;
+            opts.UseMartenEventSourcing();
+            opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
+        });
+    }
 }
 
-// Aggregate Base Class
-public abstract class EventSourcedAggregate<TId>
+// Infrastructure/Marten/MartenConfiguration.cs  
+public static class MartenConfiguration
 {
-    public TId Id { get; protected set; }
-    public int Version { get; private set; }
-    private readonly List<DomainEvent> _uncommittedEvents = new();
-
-    public IReadOnlyList<DomainEvent> GetUncommittedEvents() 
-        => _uncommittedEvents.AsReadOnly();
-
-    protected void RaiseEvent(DomainEvent @event)
+    public static void ConfigureEventStore(this StoreOptions options)
     {
-        _uncommittedEvents.Add(@event);
-        Apply(@event);
-        Version++;
+        options.Events.StreamIdentity = StreamIdentity.AsString;
+        options.Events.DatabaseSchemaName = "events";
+        options.DatabaseSchemaName = "projections";
     }
-
-    protected abstract void Apply(DomainEvent @event);
 }
 ```
 
-### Week 5-6: Testing Framework & Monitoring
+### Week 4: Testing Infrastructure
 ```yaml
-Testing Infrastructure:
-  - Event sourcing test utilities
-  - Specification test framework
-  - Integration test setup
-  - Performance benchmarking tools
+Testing Setup:
+  - xUnit project with FluentAssertions
+  - Testcontainers for PostgreSQL integration tests
+  - Specification test base classes
+  - Performance testing utilities
+  - Test data builders and factories
 
-Monitoring Setup:
-  - Event store metrics collection
-  - Wolverine performance monitoring
-  - PostgreSQL query optimization
-  - Application insights integration
+Development Tools:
+  - Local development setup documentation
+  - Code generation templates
+  - Developer CLI utilities
+  - Debugging and profiling setup
 ```
 
 ### Deliverables
-- ✅ PostgreSQL cluster operational
-- ✅ Marten event store configured
-- ✅ Wolverine message processing ready
-- ✅ Shared kernel for event sourcing
-- ✅ Testing and monitoring infrastructure
-- ✅ CI/CD pipeline updates
+- ✅ Complete VSA project structure
+- ✅ Marten + Wolverine integration configured
+- ✅ SharedKernel base types implemented
+- ✅ Testing framework operational
+- ✅ Local development environment ready
 
-## Phase 2: Proof of Concept Implementation (Weeks 7-12)
+## Phase 2: First Vertical Slice Implementation (Weeks 5-8)
 
 ### Objectives
-- Implement first feature using event sourcing
-- Validate architecture decisions
-- Establish patterns for agentic code generation
-- Create migration tooling
+- Implement complete UserManagement vertical slice
+- Establish all architectural patterns and conventions
+- Validate Wolverine AggregateHandler workflow
+- Create template for subsequent slices
 
 ### Week 7-8: User Management POC
 ```csharp

@@ -9,92 +9,96 @@
 
 ## Vision Statement
 
-Transform the existing PlatformPlatform .NET application from a traditional CRUD-based architecture to a cutting-edge event-driven system powered by the Critter Stack (Marten + Wolverine), enabling agentic code generation through specification-driven development.
+Transform PlatformPlatform from a traditional CRUD-based system to a modern **Vertical Slice Architecture** powered by the **Critter Stack** (Marten + Wolverine), implementing the **AggregateHandler workflow** for minimal ceremony code and enabling **agentic code generation** from business specifications.
 
 ## Business Objectives
 
 ### Primary Goals
-- **Event-First Architecture**: Transition from state-based to event-based persistence using event sourcing
-- **Agentic Development**: Enable AI-driven code generation from business specifications
-- **Specification Driven**: Use Given-When-Then patterns for both command and view specifications
-- **Technology Modernization**: Replace legacy components with modern alternatives:
-  - SQL Server → PostgreSQL
-  - MediatR → Wolverine
-  - CRUD → Event Sourcing
-  - EF Core → Marten
+- **Code Transformation**: Complete architectural transformation without operational concerns
+- **Vertical Slice Architecture**: Reorganize code by business capabilities, not technical layers
+- **Critter Stack Adoption**: Implement Wolverine AggregateHandler workflow with Marten event sourcing
+- **Agentic Code Generation**: Enable AI-driven development from Given-When-Then specifications
+- **Technology Stack Modernization**: 
+  - SQL Server → PostgreSQL + Marten
+  - MediatR + CRUD → Wolverine AggregateHandler + Event Sourcing
+  - Layered Architecture → Vertical Slice Architecture
 
 ### Secondary Goals
-- **Maintain Architecture**: Preserve vertical slice architecture and CQRS patterns
-- **Improve Developer Experience**: Reduce boilerplate through code generation
-- **Enhance Testability**: Leverage event sourcing for better testing capabilities
-- **Performance Optimization**: Utilize Wolverine's superior performance over MediatR
+- **Developer Productivity**: Reduce boilerplate through Wolverine's code generation
+- **Code Quality**: Improve maintainability through clear vertical slice boundaries
+- **Testing Excellence**: Leverage pure functions and event sourcing for superior testing
+- **Performance**: Utilize Wolverine's static code generation for optimal runtime performance
 
 ## Technical Scope
 
 ### Core Transformations
 
-#### 1. Data Architecture
+#### 1. Architectural Pattern Shift
+- **From**: Layered architecture with horizontal technical layers
+- **To**: Vertical Slice Architecture organized by business capabilities
+- **Impact**: Complete code reorganization and folder restructuring
+
+#### 2. Event Sourcing Implementation
 - **From**: SQL Server with EF Core CRUD operations
-- **To**: PostgreSQL with Marten event sourcing
-- **Impact**: Complete data layer redesign
+- **To**: PostgreSQL with Marten event sourcing and AggregateHandler workflow
+- **Impact**: New persistence layer with immutable event streams
 
-#### 2. Messaging Architecture
-- **From**: MediatR for command/query handling
-- **To**: Wolverine for low-ceremony messaging
-- **Impact**: Simplified handler implementations
+#### 3. Message Processing Transformation
+- **From**: MediatR with manual handler registration and pipeline behaviors
+- **To**: Wolverine AggregateHandler with automatic code generation
+- **Impact**: Elimination of boilerplate code and improved performance
 
-#### 3. Specification Framework
-- **From**: Traditional domain models
-- **To**: Event-based specifications with Given-When-Then patterns
-- **Impact**: Enables agentic code generation
+#### 4. Domain Model Evolution
+- **From**: Mutable entities with behavior methods
+- **To**: Immutable state records with pure Apply() functions
+- **Impact**: New domain modeling approach with event-driven state evolution
 
-#### 4. Code Generation
-- **From**: Manual implementation of business logic
-- **To**: AI-generated code from specifications
-- **Impact**: Accelerated development cycles
+#### 5. Testing Strategy Transformation
+- **From**: Complex integration tests with database setup
+- **To**: Fast unit tests for pure functions + targeted integration tests
+- **Impact**: Faster test execution and better test isolation
 
-### Components in Scope
+### Code Transformation Scope
 
-#### Application Services
-- **Account Management**: User registration, authentication, tenant management
-- **Back Office**: Administrative operations and support features
-- **App Gateway**: API gateway and routing (minimal changes)
-- **Shared Kernel**: Complete rewrite for event sourcing support
+#### Vertical Slices to Create
+- **UserManagement**: Complete user lifecycle (register, update, deactivate)
+- **TenantManagement**: Tenant creation, configuration, and management  
+- **Authentication**: Login, logout, session management, password reset
+- **Notifications**: Email notifications and system alerts
 
-#### Infrastructure
-- **Database**: Migration from SQL Server to PostgreSQL
-- **Event Store**: Implementation using Marten
-- **Projections**: Read models and view generation
-- **Message Handling**: Wolverine-based command/query processing
+#### Shared Components
+- **SharedKernel**: Base types for events, commands, queries, and results
+- **Infrastructure**: Marten configuration, Wolverine setup, web bootstrapping
+- **Testing**: Test utilities and specification framework
 
-### Components Out of Scope
-- **Frontend Applications**: React SPAs remain unchanged
-- **Cloud Infrastructure**: Azure resources configuration unchanged
-- **CI/CD Pipelines**: GitHub Actions workflows unchanged
-- **Developer CLI**: Minimal changes required
+### Components Out of Scope (No Changes)
+- **Frontend Applications**: React SPAs continue to work with existing API contracts
+- **Cloud Infrastructure**: Azure deployment configuration remains unchanged
+- **CI/CD Pipelines**: GitHub Actions workflows remain the same
+- **External Integrations**: Third-party service integrations unchanged
 
 ## Success Criteria
 
-### Functional Requirements
-1. **Feature Parity**: All existing functionality preserved
-2. **Event Sourcing**: Complete audit trail of all business events
-3. **Agentic Generation**: AI can generate 80% of command handlers from specifications
-4. **Performance**: Response times equal to or better than current system
-5. **Scalability**: Support for millions of events and high-throughput scenarios
-
-### Technical Requirements
-1. **Zero Downtime**: Migration strategy with no service interruption
-2. **Data Integrity**: Complete data migration with validation
-3. **Backward Compatibility**: API contracts remain unchanged
-4. **Testing Coverage**: 90%+ test coverage maintained
-5. **Documentation**: Comprehensive architectural documentation
+### Code Transformation Requirements
+1. **Complete VSA Implementation**: All features organized as self-contained vertical slices
+2. **Wolverine AggregateHandler Adoption**: All command processing uses AggregateHandler workflow
+3. **Event Sourcing Integration**: Complete Marten event store implementation
+4. **API Contract Preservation**: All HTTP endpoints maintain existing contracts
+5. **Zero Regression**: All existing functionality works identically
 
 ### Quality Requirements
-1. **Maintainability**: Code complexity reduction through specifications
-2. **Testability**: Improved testing through event-based architecture
-3. **Developer Experience**: Reduced time to implement new features
-4. **Security**: Enhanced audit capabilities through event sourcing
-5. **Observability**: Improved monitoring and debugging capabilities
+1. **Code Clarity**: Business logic clearly separated from infrastructure concerns
+2. **Minimal Ceremony**: Reduced boilerplate through Wolverine code generation
+3. **Test Performance**: Unit tests run in <100ms, full test suite in <30 seconds
+4. **Documentation**: Complete architectural patterns and examples documented
+5. **Maintainability**: New features can be added by following established patterns
+
+### Technical Achievement Targets
+1. **Vertical Slice Isolation**: Each slice can be developed and tested independently
+2. **Pure Function Testing**: Business logic tested without external dependencies
+3. **Event Store Performance**: Event persistence under 10ms for single events
+4. **Code Generation**: 70% of boilerplate code eliminated through Wolverine
+5. **Developer Onboarding**: New developers productive within 1 week using patterns
 
 ## Key Stakeholders
 
