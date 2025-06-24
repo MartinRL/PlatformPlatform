@@ -1,342 +1,394 @@
-# CritterPP Architecture: Functional Event-Driven Design
+# CritterPP Architecture: Vertical Slice + Wolverine AggregateHandler
 
 ## Architecture Overview
 
-CritterPP transforms PlatformPlatform from a traditional CRUD-based system to a functional event-driven architecture using the Critter Stack (Marten + Wolverine) with PostgreSQL as the underlying database. The architecture follows the **Functional Core, Imperative Shell** pattern with the **Decider pattern** for pure domain logic.
+CritterPP transforms PlatformPlatform using **Vertical Slice Architecture (VSA)** combined with **Wolverine's AggregateHandler workflow** and **Marten event sourcing**. This creates a "low ceremony" architecture that organizes code by business capability while leveraging the power of the Critter Stack.
 
-## Core Architectural Principles
+## Core Architectural Patterns
 
-### Functional Core, Imperative Shell
-- **Functional Core**: Pure domain logic without I/O, async/await, or exceptions
-- **Imperative Shell**: Handles I/O, persistence, async operations, and error handling
-- **Result Types**: Domain logic returns Result<T> instead of throwing exceptions
-- **Immutable State**: All state transitions through pure functions
+### A-Frame Architecture (Wolverine Pattern)
+- **Pure Business Logic**: Decider functions isolated from infrastructure concerns
+- **Generated Infrastructure**: Wolverine generates all plumbing and orchestration code
+- **Minimal Ceremony**: Business logic expressed with minimal boilerplate
+- **Clear Boundaries**: Sharp separation between domain and infrastructure
 
-### Event Sourcing with Decider Pattern
-- **Event Streams**: All business state changes captured as immutable events
-- **Deciders**: Pure functions that decide events based on commands and current state
-- **State Evolution**: Pure functions that evolve state from events
-- **Projections**: Read models built from event streams for queries
-- **Temporal Queries**: Point-in-time state reconstruction capabilities
+### Vertical Slice Architecture (VSA)
+- **Feature-Based Organization**: Code organized by business capabilities, not technical layers
+- **Self-Contained Slices**: Each slice contains all code needed for a complete feature
+- **Reduced Coupling**: Minimal dependencies between slices
+- **Independent Testing**: Each slice can be tested in isolation
 
-### Command Query Responsibility Segregation (CQRS)
-- **Commands**: Processed by pure decider functions in the functional core
-- **Queries**: Read operations against projections handled by imperative shell
-- **Separation**: Clear distinction between pure domain logic and I/O operations
-- **Scalability**: Independent scaling of command processing and query handling
+### Wolverine AggregateHandler Workflow
+- **Aggregate State**: Immutable state records reconstructed from events
+- **Decider Functions**: Pure functions for command → events transformation
+- **Event Application**: Pure functions for event → state evolution
+- **Code Generation**: Wolverine generates all handler orchestration code
 
 ### Specification-Driven Development
-- **Given-When-Then**: Behavioral specifications for decider functions
-- **Event Specifications**: Expected events from command processing
-- **View Specifications**: Read model requirements and validation
-- **Agentic Generation**: AI code generation from functional specifications
+- **Given-When-Then**: Behavioral specifications drive implementation
+- **Agentic Generation**: AI generates decider functions from specifications
+- **Test-First**: Specifications become executable tests
+- **Living Documentation**: Specifications serve as always-current documentation
 
-## Technology Stack
+## Vertical Slice Folder Structure
 
-### Data Persistence
+### Overall Project Organization
 ```
-PostgreSQL (Primary Database)
-├── Marten (Event Store & Document DB)
-│   ├── Event Streams (mt_events table)
-│   ├── Projections (Generated read models)
-│   └── Document Storage (Complex queries)
-└── Event Store Schema
-    ├── Stream Metadata
-    ├── Event Metadata
-    └── Projection State
-```
-
-### Application Framework
-```
-.NET 9 Application
-├── Wolverine (Message Processing)
-│   ├── Command Handlers (Aggregate workflows)
-│   ├── Event Handlers (Side effects)
-│   ├── Query Handlers (Read model access)
-│   └── Saga Handlers (Long-running processes)
-├── Marten (Persistence)
-│   ├── Event Store Configuration
-│   ├── Projection Definitions
-│   └── Document Mappings
-└── ASP.NET Core (Web Framework)
-    ├── Minimal APIs (HTTP endpoints)
-    ├── Middleware Pipeline
-    └── Authentication/Authorization
+CritterPP/
+├── Features/                    # All business features as vertical slices
+│   ├── UserManagement/         # Complete user management slice
+│   ├── TenantManagement/       # Complete tenant management slice
+│   ├── Authentication/         # Complete auth slice
+│   └── Notifications/          # Complete notification slice
+├── SharedKernel/               # Cross-cutting concerns
+│   ├── Events/                 # Base event types
+│   ├── Commands/               # Base command types
+│   ├── Projections/            # Base projection types
+│   ├── Results/                # Result<T> implementations
+│   └── Extensions/             # Wolverine/Marten extensions
+└── Infrastructure/             # Infrastructure configuration
+    ├── Database/               # Marten configuration
+    ├── Messaging/              # Wolverine configuration
+    └── Web/                    # ASP.NET Core setup
 ```
 
-## Functional Core Design
+### Individual Vertical Slice Structure
+```
+Features/UserManagement/
+├── Commands/                   # All commands for this slice
+│   ├── RegisterUser.cs        # Command + Handler + Events
+│   ├── UpdateUserProfile.cs   # Command + Handler + Events
+│   └── DeactivateUser.cs      # Command + Handler + Events
+├── Queries/                    # All queries for this slice
+│   ├── GetUser.cs             # Query + Handler + Result
+│   ├── GetUserList.cs         # Query + Handler + Result
+│   └── SearchUsers.cs         # Query + Handler + Result
+├── Events/                     # Domain events for this slice
+│   ├── UserRegistered.cs      # Event definition
+│   ├── UserProfileUpdated.cs  # Event definition
+│   └── UserDeactivated.cs     # Event definition
+├── State/                      # Aggregate state for this slice
+│   └── UserState.cs           # Immutable state record
+├── Projections/                # Read models for this slice
+│   ├── UserSummary.cs         # List view projection
+│   ├── UserDetails.cs         # Detail view projection
+│   └── UserActivity.cs        # Activity log projection
+├── Specifications/             # Given-When-Then specs
+│   ├── RegisterUserSpec.cs    # Behavior specifications
+│   └── UpdateProfileSpec.cs   # Behavior specifications
+└── Tests/                      # Tests for this slice
+    ├── DeciderTests.cs        # Pure function tests
+    ├── HandlerTests.cs        # Integration tests
+    └── ProjectionTests.cs     # Projection tests
+```
 
-### Event Schema (Immutable Records)
+### Technology Stack
+```
+Wolverine AggregateHandler Workflow
+├── Command Processing
+│   ├── HTTP Endpoint (Minimal API)
+│   ├── Command Validation
+│   ├── Load Aggregate State (Marten)
+│   ├── Decider Function (Pure)
+│   ├── Store Events (Marten)
+│   └── Update Projections (Marten)
+├── Event Processing
+│   ├── Event Handlers (Side Effects)
+│   ├── Projection Updates
+│   └── External Integrations
+└── Query Processing
+    ├── Projection Queries (Marten)
+    ├── Live Aggregation (Optional)
+    └── HTTP Response
+```
+
+## Wolverine AggregateHandler Pattern Implementation
+
+### Complete Vertical Slice Example: User Registration
+
+#### Command Definition with Handler
 ```csharp
-// Base event type - immutable and serializable
-public abstract record DomainEvent
-{
-    public Guid EventId { get; init; } = Guid.NewGuid();
-    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
-    public string EventType { get; init; } = GetType().Name;
-    public int Version { get; init; } = 1;
-}
-
-// Domain events as immutable records
-public record UserRegistered(
-    UserId UserId,
+// Features/UserManagement/Commands/RegisterUser.cs
+public record RegisterUser(
     TenantId TenantId,
     string Email,
-    UserRole Role,
-    DateTimeOffset OccurredAt
-) : DomainEvent;
+    UserRole Role
+) : ICommand;
 
-public record UserUpdated(
-    UserId UserId,
-    string FirstName,
-    string LastName,
-    string Title,
-    DateTimeOffset UpdatedAt
-) : DomainEvent;
+// Wolverine generates this handler automatically
+public static class RegisterUserHandler
+{
+    // The entire aggregate handler workflow in one place
+    public static UserRegistered Handle(
+        RegisterUser command,
+        UserState currentState)  // Marten loads this from events
+    {
+        // Pure decider function - no I/O, no async, no exceptions
+        return currentState.Status switch
+        {
+            UserStatus.NotExists when IsValidEmail(command.Email) => 
+                new UserRegistered(
+                    UserId.New(),
+                    command.TenantId,
+                    command.Email.ToLowerInvariant(),
+                    command.Role,
+                    DateTimeOffset.UtcNow),
+            
+            UserStatus.NotExists => 
+                throw new InvalidOperationException("Invalid email format"),
+            
+            _ => throw new InvalidOperationException("User already exists")
+        };
+    }
+
+    private static bool IsValidEmail(string email) =>
+        !string.IsNullOrWhiteSpace(email) && email.Contains('@');
+}
 ```
 
-### Stream Naming Convention
-- **User Streams**: `user-{userId}`
-- **Tenant Streams**: `tenant-{tenantId}`
-- **Authentication Streams**: `auth-{userId}`
-- **System Streams**: `system-{feature}`
-
-### Event Versioning Strategy
-- **Upcasting**: Transform old event versions to new formats
-- **Weak Schema**: Add optional properties without breaking changes
-- **Version Metadata**: Track event schema versions
-- **Migration Support**: Automated event transformation
-
-## Decider Pattern Implementation
-
-### State Types (Immutable Records)
+#### Aggregate State (Immutable Record)
 ```csharp
-// User state - immutable record
+// Features/UserManagement/State/UserState.cs
 public record UserState(
     UserId Id,
     TenantId TenantId,
     string Email,
     string FirstName,
     string LastName,
-    string Title,
     UserRole Role,
     UserStatus Status,
-    DateTimeOffset CreatedAt,
-    DateTimeOffset LastModifiedAt
+    DateTimeOffset CreatedAt
 )
 {
-    public static UserState Initial => new(
+    // Initial state for new aggregates
+    public static UserState NotExists => new(
         UserId.Empty,
         TenantId.Empty,
         string.Empty,
         string.Empty,
         string.Empty,
-        string.Empty,
         UserRole.Member,
-        UserStatus.Inactive,
-        DateTimeOffset.MinValue,
+        UserStatus.NotExists,
         DateTimeOffset.MinValue
     );
+
+    // Pure function for state evolution
+    public UserState Apply(UserRegistered @event) => this with
+    {
+        Id = @event.UserId,
+        TenantId = @event.TenantId,
+        Email = @event.Email,
+        Role = @event.Role,
+        Status = UserStatus.Active,
+        CreatedAt = @event.OccurredAt
+    };
+
+    public UserState Apply(UserProfileUpdated @event) => this with
+    {
+        FirstName = @event.FirstName,
+        LastName = @event.LastName
+    };
 }
 ```
 
-### Command Types (Immutable Records)
+#### Events (Domain Facts)
 ```csharp
-public record RegisterUserCommand(
+// Features/UserManagement/Events/UserRegistered.cs
+public record UserRegistered(
+    UserId UserId,
     TenantId TenantId,
     string Email,
-    UserRole Role
+    UserRole Role,
+    DateTimeOffset OccurredAt
 );
 
-public record UpdateUserCommand(
+// Features/UserManagement/Events/UserProfileUpdated.cs
+public record UserProfileUpdated(
     UserId UserId,
     string FirstName,
     string LastName,
-    string Title
+    DateTimeOffset UpdatedAt
 );
 ```
 
-### Decider Functions (Pure Functions)
+### Stream Naming and Configuration
 ```csharp
-public static class UserDecider
+// Infrastructure/Database/MartenConfiguration.cs
+public static class StreamConfiguration
 {
-    // Pure function: Command + State -> Result<Event[]>
-    public static Result<DomainEvent[]> Decide(
-        object command,
-        UserState state)
+    public static void ConfigureStreams(this StoreOptions options)
     {
-        return command switch
-        {
-            RegisterUserCommand cmd => DecideRegisterUser(cmd, state),
-            UpdateUserCommand cmd => DecideUpdateUser(cmd, state),
-            _ => Result.Failure<DomainEvent[]>("Unknown command")
-        };
-    }
-
-    // Pure decision function - no I/O, no exceptions
-    private static Result<DomainEvent[]> DecideRegisterUser(
-        RegisterUserCommand command,
-        UserState state)
-    {
-        // Validation logic - pure functions only
-        if (string.IsNullOrWhiteSpace(command.Email))
-            return Result.Failure<DomainEvent[]>("Email is required");
-
-        if (!IsValidEmail(command.Email))
-            return Result.Failure<DomainEvent[]>("Invalid email format");
-
-        if (state.Status != UserStatus.Inactive)
-            return Result.Failure<DomainEvent[]>("User already exists");
-
-        // Generate events - pure function
-        var events = new DomainEvent[]
-        {
-            new UserRegistered(
-                UserId.New(),
-                command.TenantId,
-                command.Email.ToLowerInvariant(),
-                command.Role,
-                DateTimeOffset.UtcNow
-            )
-        };
-
-        return Result.Success(events);
-    }
-
-    private static Result<DomainEvent[]> DecideUpdateUser(
-        UpdateUserCommand command,
-        UserState state)
-    {
-        if (state.Status != UserStatus.Active)
-            return Result.Failure<DomainEvent[]>("User must be active to update");
-
-        if (string.IsNullOrWhiteSpace(command.FirstName))
-            return Result.Failure<DomainEvent[]>("First name is required");
-
-        var events = new DomainEvent[]
-        {
-            new UserUpdated(
-                command.UserId,
-                command.FirstName,
-                command.LastName,
-                command.Title,
-                DateTimeOffset.UtcNow
-            )
-        };
-
-        return Result.Success(events);
-    }
-
-    // Pure helper function
-    private static bool IsValidEmail(string email) =>
-        !string.IsNullOrWhiteSpace(email) && email.Contains('@');
-}
-```
-
-### State Evolution (Pure Functions)
-```csharp
-public static class UserEvolution
-{
-    // Pure function: State + Event -> State
-    public static UserState Evolve(UserState state, DomainEvent @event)
-    {
-        return @event switch
-        {
-            UserRegistered e => state with
-            {
-                Id = e.UserId,
-                TenantId = e.TenantId,
-                Email = e.Email,
-                Role = e.Role,
-                Status = UserStatus.Active,
-                CreatedAt = e.OccurredAt,
-                LastModifiedAt = e.OccurredAt
-            },
-            UserUpdated e => state with
-            {
-                FirstName = e.FirstName,
-                LastName = e.LastName,
-                Title = e.Title,
-                LastModifiedAt = e.UpdatedAt
-            },
-            _ => state
-        };
-    }
-
-    // Fold events into final state - pure function
-    public static UserState Fold(IEnumerable<DomainEvent> events)
-    {
-        return events.Aggregate(UserState.Initial, Evolve);
+        // User aggregate streams
+        options.Events.StreamIdentity = StreamIdentity.AsString;
+        
+        // Stream naming conventions
+        options.Events.AddEventType<UserRegistered>();
+        options.Events.AddEventType<UserProfileUpdated>();
+        
+        // Aggregate configuration
+        options.Projections.Snapshot<UserState>(SnapshotLifecycle.Inline);
     }
 }
 ```
 
-## Imperative Shell: Wolverine Integration
+## Marten Projections (Read Models)
 
-### Command Handlers (Imperative Shell)
+### Projection Definitions for Vertical Slice
 ```csharp
-public static class UserCommandHandlers
+// Features/UserManagement/Projections/UserSummary.cs
+public record UserSummary(
+    string Id,
+    string TenantId,
+    string Email,
+    string DisplayName,
+    UserRole Role,
+    UserStatus Status,
+    DateTimeOffset CreatedAt
+);
+
+// Marten projection handler
+public class UserSummaryProjection : MultiStreamProjection<UserSummary, string>
 {
-    // Wolverine command handler - handles I/O and orchestration
-    public static async Task<Result<UserId>> Handle(
-        RegisterUserCommand command,
-        IDocumentSession session,
-        IExecutionContext context,
+    public UserSummaryProjection()
+    {
+        Identity<UserRegistered>(x => x.UserId.Value);
+        Identity<UserProfileUpdated>(x => x.UserId.Value);
+    }
+
+    public UserSummary Create(UserRegistered @event) => new(
+        Id: @event.UserId.Value,
+        TenantId: @event.TenantId.Value,
+        Email: @event.Email,
+        DisplayName: @event.Email, // Initially use email
+        Role: @event.Role,
+        Status: UserStatus.Active,
+        CreatedAt: @event.OccurredAt
+    );
+
+    public UserSummary Apply(UserProfileUpdated @event, UserSummary current) =>
+        current with
+        {
+            DisplayName = $"{@event.FirstName} {@event.LastName}".Trim()
+        };
+}
+```
+
+### Query Handling in Vertical Slice
+```csharp
+// Features/UserManagement/Queries/GetUser.cs
+public record GetUser(UserId UserId) : IQuery<UserSummary?>;
+
+public static class GetUserHandler
+{
+    public static async Task<UserSummary?> Handle(
+        GetUser query,
+        IQuerySession session,
         CancellationToken cancellationToken)
     {
-        // Load current state from event store (I/O operation)
-        var stream = $"user-{command.Email.ToLowerInvariant()}";
-        var events = await session.Events.FetchStreamAsync(stream, token: cancellationToken);
-        var currentState = UserEvolution.Fold(events.Cast<DomainEvent>());
-
-        // Call pure decider function (functional core)
-        var result = UserDecider.Decide(command, currentState);
-        
-        if (result.IsFailure)
-            return Result.Failure<UserId>(result.Error);
-
-        // Store events (I/O operation)
-        var newEvents = result.Value;
-        session.Events.Append(stream, newEvents);
-        await session.SaveChangesAsync(cancellationToken);
-
-        // Extract UserId from first event
-        var userRegistered = newEvents.OfType<UserRegistered>().FirstOrDefault();
-        return userRegistered != null 
-            ? Result.Success(userRegistered.UserId)
-            : Result.Failure<UserId>("Failed to register user");
+        return await session
+            .Query<UserSummary>()
+            .Where(u => u.Id == query.UserId.Value)
+            .SingleOrDefaultAsync(cancellationToken);
     }
+}
 
-    public static async Task<Result> Handle(
-        UpdateUserCommand command,
-        IDocumentSession session,
+// Features/UserManagement/Queries/GetUserList.cs  
+public record GetUserList(
+    TenantId TenantId,
+    int Skip = 0,
+    int Take = 50
+) : IQuery<IReadOnlyList<UserSummary>>;
+
+public static class GetUserListHandler
+{
+    public static async Task<IReadOnlyList<UserSummary>> Handle(
+        GetUserList query,
+        IQuerySession session,
         CancellationToken cancellationToken)
     {
-        // Load current state (I/O)
-        var stream = $"user-{command.UserId.Value}";
-        var events = await session.Events.FetchStreamAsync(stream, token: cancellationToken);
-        var currentState = UserEvolution.Fold(events.Cast<DomainEvent>());
-
-        // Call pure decider (functional core)
-        var result = UserDecider.Decide(command, currentState);
-        
-        if (result.IsFailure)
-            return Result.Failure(result.Error);
-
-        // Store events (I/O)
-        session.Events.Append(stream, result.Value);
-        await session.SaveChangesAsync(cancellationToken);
-
-        return Result.Success();
+        return await session
+            .Query<UserSummary>()
+            .Where(u => u.TenantId == query.TenantId.Value)
+            .OrderBy(u => u.CreatedAt)
+            .Skip(query.Skip)
+            .Take(query.Take)
+            .ToListAsync(cancellationToken);
     }
 }
 ```
 
-### Event Handlers (Side Effects)
+## HTTP API Integration
+
+### Minimal API Endpoints for Vertical Slice
 ```csharp
+// Features/UserManagement/UserManagementEndpoints.cs
+public static class UserManagementEndpoints
+{
+    public static void MapUserEndpoints(this IEndpointRouteBuilder routes)
+    {
+        var group = routes.MapGroup("/users").WithTags("Users");
+
+        // Command endpoints
+        group.MapPost("/", HandleRegisterUser)
+            .WithSummary("Register a new user");
+            
+        group.MapPut("/{userId}", HandleUpdateProfile)
+            .WithSummary("Update user profile");
+
+        // Query endpoints  
+        group.MapGet("/{userId}", HandleGetUser)
+            .WithSummary("Get user by ID");
+            
+        group.MapGet("/", HandleGetUserList)
+            .WithSummary("Get list of users for tenant");
+    }
+
+    // Wolverine handles the entire workflow automatically
+    public static async Task<IResult> HandleRegisterUser(
+        RegisterUser command,
+        IMessageBus messageBus,
+        CancellationToken cancellationToken)
+    {
+        // Wolverine generates this entire workflow:
+        // 1. Load UserState from events
+        // 2. Call RegisterUserHandler.Handle(command, currentState)  
+        // 3. Store resulting event(s)
+        // 4. Update projections
+        // 5. Return result
+        var result = await messageBus.InvokeAsync<UserRegistered>(command, cancellationToken);
+        return Results.Ok(new { UserId = result.UserId.Value });
+    }
+
+    public static async Task<IResult> HandleGetUser(
+        string userId,
+        IMessageBus messageBus,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetUser(new UserId(userId));
+        var user = await messageBus.InvokeAsync<UserSummary?>(query, cancellationToken);
+        return user != null ? Results.Ok(user) : Results.NotFound();
+    }
+
+    public static async Task<IResult> HandleGetUserList(
+        string tenantId,
+        int skip = 0,
+        int take = 50,
+        IMessageBus messageBus = default!,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetUserList(new TenantId(tenantId), skip, take);
+        var users = await messageBus.InvokeAsync<IReadOnlyList<UserSummary>>(query, cancellationToken);
+        return Results.Ok(users);
+    }
+}
+```
+
+### Side Effect Handlers (Event Reactions)
+```csharp
+// Features/UserManagement/Events/UserEventHandlers.cs
 public static class UserEventHandlers
 {
-    // Side effect handler - imperative shell
+    // Wolverine automatically subscribes to UserRegistered events
     public static async Task Handle(
         UserRegistered userRegistered,
         IEmailService emailService,
@@ -346,7 +398,7 @@ public static class UserEventHandlers
         {
             await emailService.SendWelcomeEmailAsync(
                 userRegistered.Email,
-                userRegistered.UserId.Value);
+                $"Welcome to our platform!");
                 
             logger.LogInformation(
                 "Welcome email sent to user {UserId}",
@@ -357,146 +409,129 @@ public static class UserEventHandlers
             logger.LogError(ex,
                 "Failed to send welcome email to user {UserId}",
                 userRegistered.UserId);
-            // Don't rethrow - side effects should not fail the main flow
+            // Side effects should not fail the main workflow
         }
     }
 
     public static async Task Handle(
-        UserUpdated userUpdated,
-        INotificationService notificationService)
+        UserProfileUpdated profileUpdated,
+        INotificationService notificationService,
+        ILogger<UserEventHandlers> logger)
     {
-        await notificationService.NotifyProfileUpdatedAsync(userUpdated.UserId);
-    }
-}
-```
-
-## Projection Architecture (Imperative Shell)
-
-### Read Model Projections
-```csharp
-// Immutable read model
-public record UserProjection(
-    string Id,
-    string TenantId,
-    string Email,
-    string FirstName,
-    string LastName,
-    string DisplayName,
-    UserRole Role,
-    UserStatus Status,
-    DateTimeOffset CreatedAt,
-    DateTimeOffset LastModifiedAt
-);
-
-// Marten projection handler
-public class UserProjectionHandler : MultiStreamProjection<UserProjection, string>
-{
-    public UserProjectionHandler()
-    {
-        Identity<UserRegistered>(x => x.UserId.Value);
-        Identity<UserUpdated>(x => x.UserId.Value);
-    }
-
-    // Pure projection function
-    public UserProjection Create(UserRegistered @event)
-    {
-        return new UserProjection(
-            Id: @event.UserId.Value,
-            TenantId: @event.TenantId.Value,
-            Email: @event.Email,
-            FirstName: string.Empty,
-            LastName: string.Empty,
-            DisplayName: @event.Email,
-            Role: @event.Role,
-            Status: UserStatus.Active,
-            CreatedAt: @event.OccurredAt,
-            LastModifiedAt: @event.OccurredAt
-        );
-    }
-
-    // Pure projection function
-    public UserProjection Apply(UserUpdated @event, UserProjection current)
-    {
-        return current with
-        {
-            FirstName = @event.FirstName,
-            LastName = @event.LastName,
-            DisplayName = $"{@event.FirstName} {@event.LastName}".Trim(),
-            LastModifiedAt = @event.UpdatedAt
-        };
-    }
-}
-```
-
-### Query Handlers (Imperative Shell)
-```csharp
-public static class UserQueryHandlers
-{
-    public static async Task<Result<UserProjection?>> Handle(
-        GetUserQuery query,
-        IDocumentSession session,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var user = await session
-                .Query<UserProjection>()
-                .Where(u => u.Id == query.UserId.Value)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            return Result.Success(user);
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure<UserProjection?>(
-                $"Failed to get user: {ex.Message}");
-        }
-    }
-
-    public static async Task<Result<PagedResult<UserProjection>>> Handle(
-        GetUsersQuery query,
-        IDocumentSession session,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var queryable = session.Query<UserProjection>()
-                .Where(u => u.TenantId == query.TenantId.Value);
-
-            if (!string.IsNullOrEmpty(query.SearchTerm))
-            {
-                queryable = queryable.Where(u => 
-                    u.Email.Contains(query.SearchTerm) ||
-                    u.DisplayName.Contains(query.SearchTerm));
-            }
-
-            var totalCount = await queryable.CountAsync(cancellationToken);
+        await notificationService.NotifyAsync(
+            profileUpdated.UserId,
+            "Your profile has been updated successfully");
             
-            var users = await queryable
-                .OrderBy(u => u.CreatedAt)
-                .Skip(query.Skip)
-                .Take(query.Take)
-                .ToListAsync(cancellationToken);
-
-            var result = new PagedResult<UserProjection>(
-                users, totalCount, query.Skip, query.Take);
-
-            return Result.Success(result);
-        }
-        catch (Exception ex)
-        {
-            return Result.Failure<PagedResult<UserProjection>>(
-                $"Failed to get users: {ex.Message}");
-        }
+        logger.LogInformation(
+            "Profile update notification sent to user {UserId}",
+            profileUpdated.UserId);
     }
 }
 ```
 
-### Projection Types
-1. **Inline Projections**: Real-time, ACID-compliant updates
-2. **Async Projections**: Eventually consistent, high-performance
-3. **Live Projections**: On-demand calculation from events using pure functions
-4. **Custom Projections**: Complex business views and reports
+## Wolverine Configuration and Bootstrapping
+
+### Application Startup Configuration
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+
+// Wolverine with Marten integration
+builder.Host.UseWolverine(opts =>
+{
+    // Enable code generation for optimal performance
+    opts.CodeGeneration.TypeLoadMode = TypeLoadMode.Static;
+    
+    // Integrate with Marten for event sourcing
+    opts.UseMartenEventSourcing(connectionString =>
+    {
+        connectionString.ConnectionString(builder.Configuration.GetConnectionString("Database"));
+        
+        // Configure event store
+        connectionString.Events.StreamIdentity = StreamIdentity.AsString;
+        
+        // Auto-discover projections in vertical slices
+        connectionString.Projections.Add<UserSummaryProjection>(ProjectionLifecycle.Inline);
+        
+        // Configure aggregate workflows
+        connectionString.UseAggregateWorkflows();
+    });
+    
+    // Auto-discover handlers from all feature slices
+    opts.Discovery.IncludeType<RegisterUserHandler>();
+    opts.Discovery.IncludeType<UserEventHandlers>();
+    
+    // Configure outbox for reliable messaging
+    opts.Policies.UseDurableOutboxOnAllSendingEndpoints();
+});
+
+var app = builder.Build();
+
+// Map all vertical slice endpoints
+app.MapUserEndpoints();
+app.MapTenantEndpoints();
+app.MapAuthenticationEndpoints();
+
+app.Run();
+```
+
+### Marten Configuration for Vertical Slices
+```csharp
+// Infrastructure/Database/MartenConfiguration.cs
+public static class MartenConfiguration
+{
+    public static void ConfigureForVerticalSlices(this StoreOptions options)
+    {
+        // Event store configuration
+        options.Events.StreamIdentity = StreamIdentity.AsString;
+        
+        // Auto-discover events from feature slices
+        options.Events.AddEventTypesFromAssembly(typeof(UserRegistered).Assembly);
+        
+        // Configure projections from all slices
+        options.Projections.Add<UserSummaryProjection>(ProjectionLifecycle.Inline);
+        options.Projections.Add<TenantSummaryProjection>(ProjectionLifecycle.Inline);
+        
+        // Enable snapshots for aggregate state
+        options.Projections.Snapshot<UserState>(SnapshotLifecycle.Inline);
+        options.Projections.Snapshot<TenantState>(SnapshotLifecycle.Inline);
+        
+        // Configure for multi-tenancy
+        options.Policies.ForAllDocuments(m =>
+        {
+            if (m.DocumentType.GetInterfaces().Contains(typeof(ITenantScoped)))
+            {
+                m.TenantIdColumn = "tenant_id";
+            }
+        });
+    }
+}
+```
+
+### Complete Vertical Slice Registration
+```csharp
+// Infrastructure/Extensions/ServiceCollectionExtensions.cs
+public static class ServiceCollectionExtensions
+{
+    public static IServiceCollection AddVerticalSlices(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        // Register shared services
+        services.AddSingleton<IEmailService, EmailService>();
+        services.AddSingleton<INotificationService, NotificationService>();
+        
+        // Auto-register all slice-specific services
+        services.Scan(scan => scan
+            .FromAssemblyOf<RegisterUserHandler>()
+            .AddClasses(classes => classes.InNamespaces("CritterPP.Features"))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+            
+        return services;
+    }
+}
+```
 
 ## Specification Framework for Functional Core
 
