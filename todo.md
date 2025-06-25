@@ -119,18 +119,19 @@
 
 ## 🔄 Next Sprint: First Vertical Slice (Weeks 5-8)
 
-### Week 5-6: UserManagement Slice Foundation
-- [ ] Create UserManagement feature folder structure
+### Week 5-6: First Vertical Slice Foundation
+- [ ] Create RegisterUser feature slice structure
 - [ ] Implement UserState aggregate record
-- [ ] Create basic user events (UserRegistered, UserUpdated)
-- [ ] Implement first command handler (RegisterUser)
+- [ ] Create basic user events (UserRegistered)
+- [ ] Implement RegisterUser decider function
 
-### Week 7-8: Complete UserManagement Slice
-- [ ] Add all user commands (UpdateProfile, DeactivateUser)
+### Week 7-8: Complete User Feature Slices
+- [ ] Add UpdateUserProfile slice (UpdateProfile command)
+- [ ] Add DeactivateUser slice (DeactivateUser command)
 - [ ] Implement user projections (UserSummary, UserDetails)
-- [ ] Create query handlers (GetUser, GetUserList)
+- [ ] Create query slices (GetUser, GetUserList)
 - [ ] Add HTTP endpoints with minimal APIs
-- [ ] Complete test coverage for the slice
+- [ ] Complete test coverage for all slices
 
 ---
 

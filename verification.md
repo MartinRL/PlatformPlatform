@@ -159,8 +159,8 @@ Then: Final view state is produced
 ### 1.1 Decider Function Tests (State + Command → Events)
 
 ```csharp
-// Test file: Features/UserManagement/Tests/UserDeciderTests.cs
-public class UserDeciderTests
+// Test file: Features/RegisterUser/Tests/RegisterUserDeciderTests.cs
+public class RegisterUserDeciderTests
 {
     // Pattern: Given State + When Decide(command, state) → Then Events
     [Theory]
@@ -287,7 +287,7 @@ public class UserDeciderTests
 ### 1.2 State Evolution Tests (Evolve Function)
 
 ```csharp
-// Test file: Features/UserManagement/Tests/UserStateEvolveTests.cs
+// Test file: Features/RegisterUser/Tests/UserStateEvolveTests.cs
 public class UserStateEvolveTests
 {
     [Fact]
@@ -379,8 +379,8 @@ public class UserStateEvolveTests
 ### 1.3 View Projection Tests (Aggregate/Fold Function)
 
 ```csharp
-// Test file: Features/UserManagement/Tests/UserViewProjectionTests.cs
-public class UserViewProjectionTests
+// Test file: Features/RegisterUser/Tests/UserSummaryProjectionTests.cs
+public class UserSummaryProjectionTests
 {
     [Fact]
     public void Aggregate_GivenEventsWhenUserSummaryProjection_ThenCompleteView()
@@ -495,7 +495,7 @@ public class UserViewProjectionTests
 ### 2.1 Command Specification Tests
 
 ```csharp
-// Test file: Features/UserManagement/Tests/RegisterUserSpecificationTests.cs
+// Test file: Features/RegisterUser/Tests/RegisterUserSpecificationTests.cs
 public class RegisterUserSpecificationTests : IAsyncLifetime
 {
     private readonly TestContext _context;

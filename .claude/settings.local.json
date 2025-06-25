@@ -9,7 +9,11 @@
       "Bash(dotnet --list-sdks)",
       "Bash(dotnet build:*)",
       "Bash(export PATH=\"$HOME/.dotnet:$PATH\")",
-      "Bash(dotnet run:*)"
+      "Bash(dotnet run:*)",
+      "Bash(dotnet new:*)",
+      "Bash(dotnet sln add:*)",
+      "WebFetch(domain:antondevtips.com)",
+      "Bash(ls:*)"
     ],
     "deny": []
   },

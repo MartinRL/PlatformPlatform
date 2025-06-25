@@ -102,7 +102,7 @@ Development Tools:
 - Validate Wolverine AggregateHandler workflow
 - Create template for subsequent slices
 
-### Week 7-8: User Management POC
+### Week 7-8: User Registration POC
 ```csharp
 // Event Definitions
 public record UserRegistered(
@@ -119,8 +119,8 @@ public record UserProfileUpdated(
     string Title,
     DateTimeOffset UpdatedAt) : DomainEvent;
 
-// Command Handler
-public static class UserCommandHandlers
+// Command Handler (RegisterUser slice)
+public static class RegisterUser
 {
     public static UserRegistered Handle(
         RegisterUserCommand command,

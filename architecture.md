@@ -36,10 +36,11 @@ CritterPP transforms PlatformPlatform using **Vertical Slice Architecture (VSA)*
 ```
 CritterPP/
 ├── Features/                    # All business features as vertical slices
-│   ├── UserManagement/         # Complete user management slice
-│   ├── TenantManagement/       # Complete tenant management slice
-│   ├── Authentication/         # Complete auth slice
-│   └── Notifications/          # Complete notification slice
+│   ├── RegisterUser/           # User registration slice
+│   ├── UpdateUserProfile/      # User profile update slice
+│   ├── CreateTenant/           # Tenant creation slice
+│   ├── AuthenticateUser/       # User authentication slice
+│   └── SendNotification/       # Notification sending slice
 ├── SharedKernel/               # Cross-cutting concerns
 │   ├── Events/                 # Base event types
 │   ├── Commands/               # Base command types
@@ -54,32 +55,27 @@ CritterPP/
 
 ### Individual Vertical Slice Structure
 ```
-Features/UserManagement/
-├── Commands/                   # All commands for this slice
-│   ├── RegisterUser.cs        # Command + Handler + Events
-│   ├── UpdateUserProfile.cs   # Command + Handler + Events
-│   └── DeactivateUser.cs      # Command + Handler + Events
-├── Queries/                    # All queries for this slice
-│   ├── GetUser.cs             # Query + Handler + Result
-│   ├── GetUserList.cs         # Query + Handler + Result
-│   └── SearchUsers.cs         # Query + Handler + Result
-├── Events/                     # Domain events for this slice
-│   ├── UserRegistered.cs      # Event definition
-│   ├── UserProfileUpdated.cs  # Event definition
-│   └── UserDeactivated.cs     # Event definition
-├── State/                      # Aggregate state for this slice
-│   └── UserState.cs           # Immutable state record
-├── Projections/                # Read models for this slice
-│   ├── UserSummary.cs         # List view projection
-│   ├── UserDetails.cs         # Detail view projection
-│   └── UserActivity.cs        # Activity log projection
-├── Specifications/             # Given-When-Then specs
-│   ├── RegisterUserSpec.cs    # Behavior specifications
-│   └── UpdateProfileSpec.cs   # Behavior specifications
+Features/RegisterUser/
+├── RegisterUser.cs             # Command + Decider + Events
+├── UserRegistered.cs           # Event definition
+├── UserState.cs               # Aggregate state record
+├── UserSummaryProjection.cs   # Read model projection
+├── RegisterUserSpecification.cs # Given-When-Then specs
 └── Tests/                      # Tests for this slice
-    ├── DeciderTests.cs        # Pure function tests
-    ├── HandlerTests.cs        # Integration tests
-    └── ProjectionTests.cs     # Projection tests
+    ├── RegisterUserDeciderTests.cs    # Pure function tests
+    ├── RegisterUserHandlerTests.cs    # Integration tests
+    └── UserSummaryProjectionTests.cs  # Projection tests
+
+Features/UpdateUserProfile/
+├── UpdateUserProfile.cs        # Command + Decider + Events
+├── UserProfileUpdated.cs       # Event definition
+├── UserState.cs               # Shared aggregate state
+├── UserDetailsProjection.cs   # Read model projection
+├── UpdateUserProfileSpecification.cs # Given-When-Then specs
+└── Tests/                      # Tests for this slice
+    ├── UpdateUserProfileDeciderTests.cs   # Pure function tests
+    ├── UpdateUserProfileHandlerTests.cs   # Integration tests
+    └── UserDetailsProjectionTests.cs      # Projection tests
 ```
 
 ### Technology Stack
