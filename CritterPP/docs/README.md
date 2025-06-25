@@ -8,6 +8,7 @@ This is the new CritterPP implementation using **Vertical Slice Architecture (VS
 
 ```
 CritterPP/
+├── CritterPP.slnx                  # Modern solution file format
 ├── src/
 │   ├── Features/                    # Vertical slices by business capability
 │   │   ├── RegisterUser/           # User registration slice

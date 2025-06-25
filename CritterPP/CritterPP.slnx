@@ -1,0 +1,38 @@
+﻿<Solution>
+  <Folder Name="/src/">
+    <Folder Name="/src/SharedKernel/">
+      <Project Path="src\SharedKernel\CritterPP.SharedKernel\CritterPP.SharedKernel.csproj" />
+    </Folder>
+    <Folder Name="/src/Infrastructure/">
+      <Project Path="src\Infrastructure\CritterPP.Infrastructure\CritterPP.Infrastructure.csproj" />
+    </Folder>
+    <Folder Name="/src/Web/">
+      <Project Path="src\Web\CritterPP.Web\CritterPP.Web.csproj" />
+    </Folder>
+    <Folder Name="/src/Features/">
+      <Folder Name="/src/Features/RegisterUser/">
+        <!-- RegisterUser feature slice will be added when implemented -->
+      </Folder>
+      <Folder Name="/src/Features/UpdateUserProfile/">
+        <!-- UpdateUserProfile feature slice will be added when implemented -->
+      </Folder>
+      <Folder Name="/src/Features/CreateTenant/">
+        <!-- CreateTenant feature slice will be added when implemented -->
+      </Folder>
+      <Folder Name="/src/Features/AuthenticateUser/">
+        <!-- AuthenticateUser feature slice will be added when implemented -->
+      </Folder>
+      <Folder Name="/src/Features/SendNotification/">
+        <!-- SendNotification feature slice will be added when implemented -->
+      </Folder>
+    </Folder>
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\SharedKernel.Tests\CritterPP.SharedKernel.Tests\CritterPP.SharedKernel.Tests.csproj" />
+    <Project Path="tests\Features.Tests\CritterPP.Features.Tests\CritterPP.Features.Tests.csproj" />
+    <Project Path="tests\Integration.Tests\CritterPP.Integration.Tests\CritterPP.Integration.Tests.csproj" />
+  </Folder>
+  <Folder Name="/docs/">
+    <!-- Documentation files -->
+  </Folder>
+</Solution>
