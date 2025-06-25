@@ -8,7 +8,8 @@
       "Bash(dotnet --version)",
       "Bash(dotnet --list-sdks)",
       "Bash(dotnet build:*)",
-      "Bash(export PATH=\"$HOME/.dotnet:$PATH\")"
+      "Bash(export PATH=\"$HOME/.dotnet:$PATH\")",
+      "Bash(dotnet run:*)"
     ],
     "deny": []
   },
