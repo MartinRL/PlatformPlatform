@@ -6,7 +6,9 @@
       "Bash(find:*)",
       "Bash(rm:*)",
       "Bash(dotnet --version)",
-      "Bash(dotnet --list-sdks)"
+      "Bash(dotnet --list-sdks)",
+      "Bash(dotnet build:*)",
+      "Bash(export PATH=\"$HOME/.dotnet:$PATH\")"
     ],
     "deny": []
   },
