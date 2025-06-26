@@ -13,7 +13,9 @@
       "Bash(dotnet new:*)",
       "Bash(dotnet sln add:*)",
       "WebFetch(domain:antondevtips.com)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(dotnet restore:*)"
     ],
     "deny": []
   },
