@@ -15,7 +15,10 @@
       "WebFetch(domain:antondevtips.com)",
       "Bash(ls:*)",
       "Bash(dotnet clean:*)",
-      "Bash(dotnet restore:*)"
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet nuget locals:*)",
+      "Bash(dotnet nuget list:*)",
+      "Bash(dotnet search:*)"
     ],
     "deny": []
   },

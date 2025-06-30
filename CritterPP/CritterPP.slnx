@@ -10,20 +10,41 @@
       <Project Path="src\Web\CritterPP.Web\CritterPP.Web.csproj" />
     </Folder>
     <Folder Name="/src/Features/">
-      <Folder Name="/src/Features/RegisterUser/">
-        <!-- RegisterUser feature slice will be added when implemented -->
+      <Folder Name="/src/Features/Users/">
+        <Folder Name="/src/Features/Users/RegisterUser/">
+          <!-- Single command slice: Register a new user -->
+        </Folder>
+        <Folder Name="/src/Features/Users/UpdateUserProfile/">
+          <!-- Single command slice: Update user profile -->
+        </Folder>
+        <Folder Name="/src/Features/Users/DeactivateUser/">
+          <!-- Single command slice: Deactivate a user -->
+        </Folder>
+        <Folder Name="/src/Features/Users/GetUser/">
+          <!-- Single query slice: Get user by ID -->
+        </Folder>
+        <Folder Name="/src/Features/Users/GetUserList/">
+          <!-- Single query slice: Get paginated user list -->
+        </Folder>
       </Folder>
-      <Folder Name="/src/Features/UpdateUserProfile/">
-        <!-- UpdateUserProfile feature slice will be added when implemented -->
+      <Folder Name="/src/Features/Tenants/">
+        <Folder Name="/src/Features/Tenants/CreateTenant/">
+          <!-- Single command slice: Create a new tenant -->
+        </Folder>
+        <Folder Name="/src/Features/Tenants/UpdateTenant/">
+          <!-- Single command slice: Update tenant details -->
+        </Folder>
+        <Folder Name="/src/Features/Tenants/GetTenant/">
+          <!-- Single query slice: Get tenant by ID -->
+        </Folder>
       </Folder>
-      <Folder Name="/src/Features/CreateTenant/">
-        <!-- CreateTenant feature slice will be added when implemented -->
-      </Folder>
-      <Folder Name="/src/Features/AuthenticateUser/">
-        <!-- AuthenticateUser feature slice will be added when implemented -->
-      </Folder>
-      <Folder Name="/src/Features/SendNotification/">
-        <!-- SendNotification feature slice will be added when implemented -->
+      <Folder Name="/src/Features/Authentication/">
+        <Folder Name="/src/Features/Authentication/AuthenticateUser/">
+          <!-- Single command slice: Authenticate user credentials -->
+        </Folder>
+        <Folder Name="/src/Features/Authentication/RefreshToken/">
+          <!-- Single command slice: Refresh authentication token -->
+        </Folder>
       </Folder>
     </Folder>
   </Folder>

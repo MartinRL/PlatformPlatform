@@ -6,4 +6,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="WolverineFx.Http" Version="4.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\CritterPP.Infrastructure\CritterPP.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\SharedKernel\CritterPP.SharedKernel\CritterPP.SharedKernel.csproj" />
+  </ItemGroup>
+
 </Project>

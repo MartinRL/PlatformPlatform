@@ -10,12 +10,20 @@ This is the new CritterPP implementation using **Vertical Slice Architecture (VS
 CritterPP/
 ├── CritterPP.slnx                  # Modern solution file format
 ├── src/
-│   ├── Features/                    # Vertical slices by business capability
-│   │   ├── RegisterUser/           # User registration slice
-│   │   ├── UpdateUserProfile/      # User profile update slice
-│   │   ├── CreateTenant/           # Tenant creation slice
-│   │   ├── AuthenticateUser/       # User authentication slice
-│   │   └── SendNotification/       # Notification sending slice
+│   ├── Features/                    # Vertical slices by specific operation
+│   │   ├── Users/
+│   │   │   ├── RegisterUser/       # Single command slice
+│   │   │   ├── UpdateUserProfile/  # Single command slice
+│   │   │   ├── DeactivateUser/     # Single command slice
+│   │   │   ├── GetUser/            # Single query slice
+│   │   │   └── GetUserList/        # Single query slice
+│   │   ├── Tenants/
+│   │   │   ├── CreateTenant/       # Single command slice
+│   │   │   ├── UpdateTenant/       # Single command slice
+│   │   │   └── GetTenant/          # Single query slice
+│   │   └── Authentication/
+│   │       ├── AuthenticateUser/   # Single command slice
+│   │       └── RefreshToken/       # Single command slice
 │   ├── SharedKernel/               # Cross-cutting concerns & base types
 │   │   └── CritterPP.SharedKernel/ # Commands, Events, Results, IDs
 │   ├── Infrastructure/             # Infrastructure configuration

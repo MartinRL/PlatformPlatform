@@ -6,4 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Marten" Version="8.2.0" />
+    <PackageReference Include="WolverineFx" Version="4.3.0" />
+    <PackageReference Include="WolverineFx.Marten" Version="4.2.0" />
+    <PackageReference Include="Npgsql" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SharedKernel\CritterPP.SharedKernel\CritterPP.SharedKernel.csproj" />
+  </ItemGroup>
+
 </Project>

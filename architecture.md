@@ -1,4 +1,4 @@
-# CritterPP Architecture: Vertical Slice + Wolverine AggregateHandler
+# CritterPP Architecture: Vertical Slice Architecture + Wolverine AggregateHandler (Decider) + Marten (Event-Sourcing)
 
 ## Architecture Overview
 
@@ -36,11 +36,19 @@ CritterPP transforms PlatformPlatform using **Vertical Slice Architecture (VSA)*
 ```
 CritterPP/
 ├── Features/                    # All business features as vertical slices
-│   ├── RegisterUser/           # User registration slice
-│   ├── UpdateUserProfile/      # User profile update slice
-│   ├── CreateTenant/           # Tenant creation slice
-│   ├── AuthenticateUser/       # User authentication slice
-│   └── SendNotification/       # Notification sending slice
+│   ├── Users/
+│   │   ├── RegisterUser/       # Single command slice
+│   │   ├── UpdateUserProfile/  # Single command slice
+│   │   ├── DeactivateUser/     # Single command slice
+│   │   ├── GetUser/            # Single query slice
+│   │   └── GetUserList/        # Single query slice
+│   ├── Tenants/
+│   │   ├── CreateTenant/       # Single command slice
+│   │   ├── UpdateTenant/       # Single command slice
+│   │   └── GetTenant/          # Single query slice
+│   └── Authentication/
+│       ├── AuthenticateUser/   # Single command slice
+│       └── RefreshToken/       # Single command slice
 ├── SharedKernel/               # Cross-cutting concerns
 │   ├── Events/                 # Base event types
 │   ├── Commands/               # Base command types
@@ -54,28 +62,41 @@ CritterPP/
 ```
 
 ### Individual Vertical Slice Structure
+
+**Command Slice Example:**
 ```
-Features/RegisterUser/
-├── RegisterUser.cs             # Command + Decider + Events
-├── UserRegistered.cs           # Event definition
-├── UserState.cs               # Aggregate state record
-├── UserSummaryProjection.cs   # Read model projection
+Features/Users/RegisterUser/
+├── RegisterUser.cs             # Command + Decider function (single file)
+├── RegisterUserEndpoint.cs     # HTTP endpoint
 ├── RegisterUserSpecification.cs # Given-When-Then specs
-└── Tests/                      # Tests for this slice
+└── Tests/
     ├── RegisterUserDeciderTests.cs    # Pure function tests
     ├── RegisterUserHandlerTests.cs    # Integration tests
-    └── UserSummaryProjectionTests.cs  # Projection tests
+    └── RegisterUserEndpointTests.cs   # API tests
+```
 
-Features/UpdateUserProfile/
-├── UpdateUserProfile.cs        # Command + Decider + Events
-├── UserProfileUpdated.cs       # Event definition
-├── UserState.cs               # Shared aggregate state
-├── UserDetailsProjection.cs   # Read model projection
-├── UpdateUserProfileSpecification.cs # Given-When-Then specs
-└── Tests/                      # Tests for this slice
-    ├── UpdateUserProfileDeciderTests.cs   # Pure function tests
-    ├── UpdateUserProfileHandlerTests.cs   # Integration tests
-    └── UserDetailsProjectionTests.cs      # Projection tests
+**Query Slice Example:**
+```
+Features/Users/GetUser/
+├── GetUser.cs                  # Query + Handler (single file)
+├── GetUserEndpoint.cs          # HTTP endpoint
+├── GetUserSpecification.cs     # Given-When-Then specs
+└── Tests/
+    ├── GetUserHandlerTests.cs  # Query tests
+    └── GetUserEndpointTests.cs # API tests
+```
+
+**Shared Components (outside slices):**
+```
+SharedKernel/
+├── Events/
+│   ├── UserRegistered.cs       # Shared across slices
+│   └── UserProfileUpdated.cs   # Shared across slices
+├── State/
+│   └── UserState.cs            # Shared aggregate state
+└── Projections/
+    ├── UserSummary.cs          # Shared read model
+    └── UserDetails.cs          # Shared read model
 ```
 
 ### Technology Stack
